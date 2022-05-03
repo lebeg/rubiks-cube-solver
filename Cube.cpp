@@ -1,47 +1,35 @@
 #include "Cube.h"
 
 namespace {
-    std::array all_colors { Color::White, Color::Yellow, Color::Red, Color::Blue, Color::Orange, Color::Green };
-    std::array all_directions { Direction::Front, Direction::Right, Direction::Up, Direction::Bottom, Direction::Left,
+    Color all_colors[6] = { Color::White, Color::Yellow, Color::Red, Color::Blue, Color::Orange, Color::Green };
+    Direction all_directions[6] = { Direction::Front, Direction::Right, Direction::Up, Direction::Bottom, Direction::Left,
                                 Direction::Down };
-    std::array all_parts { Cube::Side::Part::TopLeft, Cube::Side::Part::Top, Cube::Side::Part::TopRight,
-                           Cube::Side::Part::Left, Cube::Side::Part::Center, Cube::Side::Part::Right,
-                           Cube::Side::Part::BottomLeft, Cube::Side::Part::Bottom, Cube::Side::Part::BottomRight };
 }
 
-Cube::Cube() : m_colors { } {
+Side::Side() {}
+Side::Side(const Color &color) {
+    centre = color;
+    for (auto & cell : cells)
+        cell = color;
+}
+
+bool Side::is_solved() const {
+    for (auto & cell : cells){
+        if (cell != centre)
+            return false;
+    }
+    return true;
+}
+
+Cube::Cube() {
     auto color = std::begin(all_colors);
-    auto direction = std::begin(all_directions);
-    for (; color != std::end(all_colors); ++color, ++direction) {
-        side(*direction).colorize(*color);
-    }
-}
-
-Cube::Side Cube::side(Direction direction) {
-    return { *this, direction };
-}
-
-std::ostream &operator<<(std::ostream &os, const Cube &cube) {
-    auto size = cube.m_colors.size();
-    auto last = size - 1;
-    for (auto i = 0; i < size; ++i) {
-        const auto color = cube.m_colors[i];
-        os << static_cast<char>(color);
-        if (i < last) {
-            os << ' ';
-        }
-    }
-    return os;
-}
-
-std::istream &operator>>(std::istream &is, Cube &cube) {
-    char space;
-    for (auto &color: cube.m_colors) {
-        char c;
-        is >> c;
-        color = static_cast<Color>(c);
-    }
-    return is;
+// i now represent to you знания о различиях постфиксного и префиксного ++
+    _upper = Side(*++color);
+    _bottom = Side(*++color);
+    _left = Side(*++color);
+    _right = Side(*++color);
+    _front = Side(*++color);
+    _back = Side(*++color);
 }
 
 void Cube::rotate(Direction direction, int amount) {
@@ -66,40 +54,42 @@ void Cube::rotate(Direction direction, int amount) {
     }
 }
 
-bool Cube::solved() const {
-    return std::all_of(std::cbegin(all_directions), std::cend(all_directions),
-                       [&](auto direction) { return side(direction).solved(); });
+bool Cube::is_solved() const {
+    if (!_upper.is_solved())
+        return false;
+    if (!_bottom.is_solved())
+        return false;
+    if (!_left.is_solved())
+        return false;
+    if (!_right.is_solved())
+        return false;
+    if (!_front.is_solved())
+        return false;
+    if (!_back.is_solved())
+        return false;
+    return true;
 }
 
-const Cube::Side Cube::side(Direction direction) const {
-    return { *this, direction };
-}
-
-Cube::Side::Side(Cube &cube, Direction direction) : m_cube(cube), m_direction(direction) {
-
-}
-
-Cube::Side::Side(const Cube &cube, Direction direction) : m_cube(const_cast<Cube &>(cube)), m_direction(direction) {
-
-}
-
-
-Color Cube::Side::color(Cube::Side::Part part) const {
-    return m_cube.m_colors[static_cast<int>(m_direction) * Cube::side_size + static_cast<int>(part)];
-}
-
-Color &Cube::Side::color(Cube::Side::Part part) {
-    return m_cube.m_colors[static_cast<int>(m_direction) * Cube::side_size + static_cast<int>(part)];
-}
-
-void Cube::Side::colorize(Color color) {
-    for (auto part: all_parts) {
-        this->color(part) = color;
+//не уверена что вообще хочу такой оператор, если я конструирую уже нормальный кубик по умолчанию
+std::ostream &operator<<(std::ostream &os, const Cube &cube) {
+    auto size = cube.m_colors.size();
+    auto last = size - 1;
+    for (auto i = 0; i < size; ++i) {
+        const auto color = cube.m_colors[i];
+        os << static_cast<char>(color);
+        if (i < last) {
+            os << ' ';
+        }
     }
+    return os;
 }
 
-bool Cube::Side::solved() const {
-    auto color = this->color(Cube::Side::Part::TopLeft);
-    return std::any_of(std::cbegin(all_parts), std::cend(all_parts),
-                       [&](auto part) { return this->color(part) == color; });
+//для него нужна функция getcells
+std::istream &operator>>(std::istream &is, Cube &cube) {
+    for (auto &color: cube._upper.getcells()) {
+        char c;
+        is >> c;
+        color = static_cast<Color>(c);
+    }
+    return is;
 }
