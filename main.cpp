@@ -1,7 +1,8 @@
+#include "src/Cube.h"
 #include <iostream>
-#include "Cube.h"
 
-int main() {
+int main()
+{
     Cube cube;
     std::cout << cube << std::endl;
     std::cout << "Cube is " << (cube.solved() ? "solved" : "unsolved") << std::endl;
