@@ -4,9 +4,9 @@ namespace {
 std::array all_colors { Color::White, Color::Yellow, Color::Red, Color::Blue, Color::Orange, Color::Green };
 std::array all_directions { Direction::Front, Direction::Right, Direction::Up, Direction::Bottom, Direction::Left,
     Direction::Down };
-std::array all_parts { Cube::Side::Part::TopLeft, Cube::Side::Part::Top, Cube::Side::Part::TopRight,
-    Cube::Side::Part::Left, Cube::Side::Part::Center, Cube::Side::Part::Right,
-    Cube::Side::Part::BottomLeft, Cube::Side::Part::Bottom, Cube::Side::Part::BottomRight };
+std::array all_parts { Side::Part::TopLeft, Side::Part::Top, Side::Part::TopRight,
+    Side::Part::Left, Side::Part::Center, Side::Part::Right,
+    Side::Part::BottomLeft, Side::Part::Bottom, Side::Part::BottomRight };
 }
 
 Cube::Cube()
@@ -19,7 +19,7 @@ Cube::Cube()
     }
 }
 
-Cube::Side Cube::side(Direction direction)
+Side Cube::side(Direction direction)
 {
     return { *this, direction };
 }
@@ -78,43 +78,48 @@ bool Cube::solved() const
         [&](auto direction) { return side(direction).solved(); });
 }
 
-const Cube::Side Cube::side(Direction direction) const
+const Side Cube::side(Direction direction) const
 {
     return { *this, direction };
 }
 
-Cube::Side::Side(Cube& cube, Direction direction)
+Side::Side(Cube& cube, Direction direction)
     : m_cube(cube)
     , m_direction(direction)
 {
 }
 
-Cube::Side::Side(const Cube& cube, Direction direction)
+Side::Side(const Cube& cube, Direction direction)
     : m_cube(const_cast<Cube&>(cube))
     , m_direction(direction)
 {
 }
 
-Color Cube::Side::color(Cube::Side::Part part) const
+Color Side::color(Side::Part part) const
 {
     return m_cube.m_colors[static_cast<int>(m_direction) * Cube::side_size + static_cast<int>(part)];
 }
 
-Color& Cube::Side::color(Cube::Side::Part part)
+Color& Side::color(Side::Part part)
 {
     return m_cube.m_colors[static_cast<int>(m_direction) * Cube::side_size + static_cast<int>(part)];
 }
 
-void Cube::Side::colorize(Color color)
+void Side::colorize(Color color)
 {
     for (auto part : all_parts) {
         this->color(part) = color;
     }
 }
 
-bool Cube::Side::solved() const
+bool Side::solved() const
 {
-    auto color = this->color(Cube::Side::Part::TopLeft);
+    auto color = this->color(Side::Part::TopLeft);
     return std::any_of(std::cbegin(all_parts), std::cend(all_parts),
         [&](auto part) { return this->color(part) == color; });
+}
+
+Direction Side::direction() const
+{
+    return m_direction;
 }

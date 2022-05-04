@@ -21,6 +21,41 @@ enum class Color : char {
     Green = 'G'
 };
 
+class Cube;
+
+class Side {
+    Side(Cube& cube, Direction direction);
+
+    Side(const Cube& cube, Direction direction);
+
+    Cube& m_cube;
+    Direction m_direction;
+
+    friend class Cube;
+
+public:
+    enum class Part {
+        TopLeft,
+        Top,
+        TopRight,
+        Left,
+        Center,
+        Right,
+        BottomLeft,
+        Bottom,
+        BottomRight
+    };
+
+    Color color(Part part) const;
+
+    Color& color(Part part);
+
+    void colorize(Color color);
+
+    bool solved() const;
+    Direction direction() const;
+};
+
 class Cube {
     friend std::ostream& operator<<(std::ostream&, const Cube& cube);
 
@@ -32,39 +67,9 @@ class Cube {
 
     std::array<Color, side_size * sides> m_colors {};
 
+    friend class Side;
+
 public:
-    class Side {
-        Side(Cube& cube, Direction direction);
-
-        Side(const Cube& cube, Direction direction);
-
-        friend class Cube;
-
-        Cube& m_cube;
-        Direction m_direction;
-
-    public:
-        enum class Part {
-            TopLeft,
-            Top,
-            TopRight,
-            Left,
-            Center,
-            Right,
-            BottomLeft,
-            Bottom,
-            BottomRight
-        };
-
-        Color color(Part part) const;
-
-        Color& color(Part part);
-
-        void colorize(Color color);
-
-        bool solved() const;
-    };
-
     Cube();
 
     const Color* colors() const
