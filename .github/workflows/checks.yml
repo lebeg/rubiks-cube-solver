@@ -13,8 +13,23 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
+        with:
+          submodules: recursive
       - name: Check format
         uses: jidicula/clang-format-action@v4.5.0
         with:
           clang-format-version: '14'
-      - run: echo "🍏 This job's status is ${{ job.status }}."
+          exclude-regex: 3rdparty.*
+      - uses: lukka/get-cmake@latest
+      - name: build
+        run: |
+          mkdir build
+          cd build
+          cmake ../tests
+          cmake --build .
+      - name: run tests
+        run: |
+          cd build
+          ./Google_Tests_run
+
+      - run: echo "🍏  This job's status is ${{ job.status }}."
