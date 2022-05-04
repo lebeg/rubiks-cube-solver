@@ -1,2 +1,6 @@
 ---
 BasedOnStyle: WebKit
+EmptyLineAfterAccessModifier: Never
+MaxEmptyLinesToKeep: 1
+EmptyLineBeforeAccessModifier: Always
+KeepEmptyLinesAtTheStartOfBlocks: false
