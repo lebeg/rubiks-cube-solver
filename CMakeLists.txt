@@ -6,4 +6,4 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_subdirectory(tests)
 
-add_executable(rubics_cube_solver main.cpp Cube.cpp Cube.h)
+add_executable(rubics_cube_solver main.cpp src/Cube.cpp src/Cube.h)
