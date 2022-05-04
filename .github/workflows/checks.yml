@@ -19,6 +19,7 @@ jobs:
         uses: jidicula/clang-format-action@v4.5.0
         with:
           clang-format-version: '14'
+          exclude-regex: 3rdparty.*
       - uses: lukka/get-cmake@latest
       - name: build
         run: |
@@ -31,4 +32,4 @@ jobs:
           cd build
           ./Google_Tests_run
 
-      - run: echo "🍏 This job's status is ${{ job.status }}."
+      - run: echo "🍏  This job's status is ${{ job.status }}."
