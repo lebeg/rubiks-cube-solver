@@ -19,20 +19,16 @@ jobs:
         uses: jidicula/clang-format-action@v4.5.0
         with:
           clang-format-version: '14'
-      - run: echo "🍏 This job's status is ${{ job.status }}."
-  tests:
-    runs-on: ubuntu-latest
-
-    steps:
       - uses: lukka/get-cmake@latest
       - name: build
         run: |
-          ls ${{ github.workspace }}
           mkdir build
           cd build
           cmake ../tests
           cmake --build .
-      - name: run
+      - name: run tests
         run: |
           cd build
           ./Google_Tests_run
+
+      - run: echo "🍏 This job's status is ${{ job.status }}."
