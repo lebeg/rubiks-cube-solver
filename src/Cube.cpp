@@ -3,7 +3,7 @@
 namespace {
 std::array all_colors { Color::White, Color::Yellow, Color::Red, Color::Blue, Color::Orange, Color::Green };
 std::array all_directions { Direction::Front, Direction::Right, Direction::Up, Direction::Bottom, Direction::Left,
-    Direction::Down };
+    Direction::Back };
 std::array all_parts { Side::Part::TopLeft, Side::Part::Top, Side::Part::TopRight,
     Side::Part::Left, Side::Part::Center, Side::Part::Right,
     Side::Part::BottomLeft, Side::Part::Bottom, Side::Part::BottomRight };
@@ -67,7 +67,7 @@ void Cube::rotate(Direction direction, int amount)
         break;
     case Direction::Left:
         break;
-    case Direction::Down:
+    case Direction::Back:
         break;
     }
 }
@@ -122,4 +122,115 @@ bool Side::solved() const
 Direction Side::direction() const
 {
     return m_direction;
+}
+
+unsigned char *at(Part part)
+{
+    unsigned char a[3];
+    if (part.color() == Color::White)
+        a = [255, 248, 220];
+    if (part.color() == Color::Red)
+        a = [240, 128, 128];
+    if (part.color() == Color::Green)
+        a = [0, 250, 154];
+    if (part.color() == Color::Yellow)
+        a = [255, 255, 0];
+    if (part.color() == Color::Orange)
+        a = [255, 140, 0];
+    if (part.color() == Color::Blue)
+        a = [123, 104, 238];
+
+    return *a;
+}
+
+void Side::draw() const
+{
+    glPushMatrix();
+    if (m_direction == Direction::Front)
+        glRotated(90, 0,1,0);
+    if (m_direction == Direction::Back)
+        glRotated(90, 0,-1,0);
+    if (m_direction == Direction::Left)
+        glRotated(90, 1,0,0);
+    if (m_direction == Direction::Right)
+        glRotated(90, 0,-1,0);
+    if (m_direction == Direction::Bottom)
+        glRotated(180, 0,1,0);
+
+    glTranslated(0,0,0.6);
+
+    glBegin(GL_QUADS);
+
+    glColor3ubv(at(Part::TopLeft));
+    glNormal3f(0, 0, 1);
+    glVertex3f(-0.6, -0.6, 0);
+    glVertex3f(-0.6, -0.2, 0);
+    glVertex3f(-0.2, -0.2, 0);
+    glVertex3f(-0.2, -0.6, 0);
+
+    glColor3ubv(at(Part::Top));
+    glNormal3f(0, 0, 1);
+    glVertex3f(-0.6, -0.2, 0);
+    glVertex3f(-0.6, 0.2, 0);
+    glVertex3f(-0.2, 0.2, 0);
+    glVertex3f(-0.2, -0.2, 0);
+
+    glColor3ubv(at(Part::TopRight));
+    glNormal3f(0, 0, 1);
+    glVertex3f(-0.6, 0.2, 0);
+    glVertex3f(-0.6, 0.6, 0);
+    glVertex3f(-0.2, 0.6, 0);
+    glVertex3f(-0.2, -0.2, 0);
+
+    glColor3ubv(at(Part::Center));
+    glNormal3f(0, 0, 1);
+    glVertex3f(-0.2, -0.2, 0);
+    glVertex3f(-0.2, 0.2, 0);
+    glVertex3f(0.2, 0.2, 0);
+    glVertex3f(0.2, -0.2, 0);
+
+    glColor3ubv(at(Part::Left));
+    glNormal3f(0, 0, 1);
+    glVertex3f(-0.2, -0.6, 0);
+    glVertex3f(-0.2, -0.2, 0);
+    glVertex3f(0.2, -0.2, 0);
+    glVertex3f(0.2, -0.6, 0);
+
+    glColor3ubv(at(Part::Right));
+    glNormal3f(0, 0, 1);
+    glVertex3f(-0.2, -0.2, 0);
+    glVertex3f(-0.2, 0.2, 0);
+    glVertex3f(0.2, 0.2, 0);
+    glVertex3f(0.2, -0.2, 0);
+
+    glColor3ubv(at(Part::Bottom));
+    glNormal3f(0, 0, 1);
+    glVertex3f(0.2, -0.2, 0);
+    glVertex3f(0.2, 0.2, 0);
+    glVertex3f(0.6, 0.2, 0);
+    glVertex3f(0.6, -0.2, 0);
+
+    glColor3ubv(at(Part::BottomLeft));
+    glNormal3f(0, 0, 1);
+    glVertex3f(0.2, -0.6, 0);
+    glVertex3f(0.2, -0.2, 0);
+    glVertex3f(0.6, -0.2, 0);
+    glVertex3f(0.6, -0.6, 0);
+
+    glColor3ubv(at(Part::BottomRight));
+    glNormal3f(0, 0, 1);
+    glVertex3f(0.2, 0.2, 0);
+    glVertex3f(0.2, 0.6, 0);
+    glVertex3f(0.6, 0.6, 0);
+    glVertex3f(0.6, 0.2, 0);
+
+    glEnd();
+    glPopMatrix();
+}
+
+void Cube::draw() const {
+    for (int i = 0; i < 6; i++){
+        a = Side(*this, all_directions[i]);
+        a.draw();
+    }
 }

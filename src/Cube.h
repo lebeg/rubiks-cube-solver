@@ -2,6 +2,8 @@
 
 #include <array>
 #include <iostream>
+#include <opengl32.dll>
+#include <glu32.dll>
 
 enum class Direction {
     Front,
@@ -9,7 +11,7 @@ enum class Direction {
     Up,
     Bottom,
     Left,
-    Down
+    Back
 };
 
 enum class Color : char {
@@ -54,6 +56,8 @@ public:
 
     bool solved() const;
     Direction direction() const;
+
+    void draw() const;
 };
 
 class Cube {
@@ -82,6 +86,8 @@ public:
     Side side(Direction direction);
 
     void rotate(Direction direction, int amount);
+
+    void draw() const;
 
     bool solved() const;
 };
