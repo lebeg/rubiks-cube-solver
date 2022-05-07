@@ -1,9 +1,7 @@
 #include "Cube.h"
 
 namespace {
-std::array all_colors { Color::White, Color::Yellow, Color::Red, Color::Blue, Color::Orange, Color::Green };
-std::array all_directions { Direction::Front, Direction::Right, Direction::Up, Direction::Bottom, Direction::Left,
-    Direction::Down };
+
 std::array all_parts { Side::Part::TopLeft, Side::Part::Top, Side::Part::TopRight,
     Side::Part::Left, Side::Part::Center, Side::Part::Right,
     Side::Part::BottomLeft, Side::Part::Bottom, Side::Part::BottomRight };
@@ -12,16 +10,11 @@ std::array all_parts { Side::Part::TopLeft, Side::Part::Top, Side::Part::TopRigh
 Cube::Cube()
     : m_colors {}
 {
-    auto color = std::begin(all_colors);
-    auto direction = std::begin(all_directions);
-    for (; color != std::end(all_colors); ++color, ++direction) {
+    auto color = std::cbegin(::colors());
+    auto direction = std::cbegin(directions());
+    for (; color != std::cend(::colors()); ++color, ++direction) {
         side(*direction).colorize(*color);
     }
-}
-
-Side Cube::side(Direction direction)
-{
-    return { *this, direction };
 }
 
 std::ostream& operator<<(std::ostream& os, const Cube& cube)
@@ -49,6 +42,32 @@ std::istream& operator>>(std::istream& is, Cube& cube)
     return is;
 }
 
+const std::array<Direction, Cube::sides>& directions()
+{
+    static std::array all {
+        Direction::Front,
+        Direction::Right,
+        Direction::Up,
+        Direction::Bottom,
+        Direction::Left,
+        Direction::Back
+    };
+    return all;
+}
+
+const std::array<Color, Cube::sides>& colors()
+{
+    static std::array all {
+        Color::White,
+        Color::Yellow,
+        Color::Red,
+        Color::Blue,
+        Color::Orange,
+        Color::Green
+    };
+    return all;
+}
+
 void Cube::rotate(Direction direction, int amount)
 {
     amount = amount % 4;
@@ -67,18 +86,18 @@ void Cube::rotate(Direction direction, int amount)
         break;
     case Direction::Left:
         break;
-    case Direction::Down:
+    case Direction::Back:
         break;
     }
 }
 
 bool Cube::solved() const
 {
-    return std::all_of(std::cbegin(all_directions), std::cend(all_directions),
-        [&](auto direction) { return side(direction).solved(); });
+    return !std::any_of(std::cbegin(directions()), std::cend(directions()),
+        [&](auto direction) { return !side(direction).solved(); });
 }
 
-const Side Cube::side(Direction direction) const
+Side Cube::side(Direction direction) const
 {
     return { *this, direction };
 }

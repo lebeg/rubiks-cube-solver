@@ -9,7 +9,7 @@ enum class Direction {
     Up,
     Bottom,
     Left,
-    Down
+    Back
 };
 
 enum class Color : char {
@@ -58,16 +58,16 @@ public:
 
 class Cube {
     friend std::ostream& operator<<(std::ostream&, const Cube& cube);
-
     friend std::istream& operator>>(std::istream&, Cube& cube);
+    friend class Side;
 
+public:
     static constexpr std::size_t edge_size = 3;
     static constexpr std::size_t sides = 6;
     static constexpr std::size_t side_size = edge_size * edge_size;
 
+private:
     std::array<Color, side_size * sides> m_colors {};
-
-    friend class Side;
 
 public:
     Cube();
@@ -76,10 +76,8 @@ public:
     {
         return m_colors.data();
     }
-
-    const Side side(Direction direction) const;
-
-    Side side(Direction direction);
+    
+    Side side(Direction direction) const;
 
     void rotate(Direction direction, int amount);
 
@@ -89,3 +87,6 @@ public:
 std::ostream& operator<<(std::ostream& os, const Cube& cube);
 
 std::istream& operator>>(std::istream& is, Cube& cube);
+
+const std::array<Direction, Cube::sides>& directions();
+const std::array<Color, Cube::sides>& colors();

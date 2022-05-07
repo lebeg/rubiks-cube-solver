@@ -1,10 +1,29 @@
 #include "src/Cube.h"
-#include <iostream>
+#include "src/Render.h"
 
-int main()
+#ifdef __APPLE__
+#include <GLUT/glut.h>
+#else
+#include <GL/glut.h>
+#endif
+
+int main(int argc, char** argv)
 {
-    Cube cube;
-    std::cout << cube << std::endl;
-    std::cout << "Cube is " << (cube.solved() ? "solved" : "unsolved") << std::endl;
-    return 0;
+    // init GLUT and create Window
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
+    glutInitWindowPosition(100, 100);
+    glutInitWindowSize(320, 320);
+    glutCreateWindow("Rubik's Cube Solver");
+
+    /* that is indeed a bit ugly */
+    glutDisplayFunc([]() {
+        static Cube cube;
+        static Render render(cube);
+        render.draw();
+    });
+
+    glutMainLoop();
+
+    return EXIT_SUCCESS;
 }
