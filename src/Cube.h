@@ -76,7 +76,7 @@ public:
     {
         return m_colors.data();
     }
-    
+
     Side side(Direction direction) const;
 
     void rotate(Direction direction, int amount);
