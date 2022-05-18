@@ -46,6 +46,7 @@ int main(int argc, char** argv)
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
         glViewport(0, 0, width, height);
+        glEnable(GL_DEPTH_TEST);
 
         auto ratio = static_cast<float>(width) / static_cast<float>(height);
         gluPerspective(45.0f, ratio, 0.1f, 100.0f);
