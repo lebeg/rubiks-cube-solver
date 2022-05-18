@@ -47,13 +47,9 @@ Render::Render(const Cube& cube)
 
 void Render::draw()
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     for (auto direction : directions()) {
         draw_side(m_cube.side(direction));
     }
-
-    glutSwapBuffers();
 }
 
 void Render::draw_side(const Side& side)

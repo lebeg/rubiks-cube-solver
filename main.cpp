@@ -9,7 +9,6 @@
 
 int main(int argc, char** argv)
 {
-    // init GLUT and create Window
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
     glutInitWindowPosition(100, 100);
@@ -17,10 +16,41 @@ int main(int argc, char** argv)
     glutCreateWindow("Rubik's Cube Solver");
 
     /* that is indeed a bit ugly */
-    glutDisplayFunc([]() {
+    auto render = []() {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glLoadIdentity();
+        gluLookAt(
+            0.0f, 0.0f, 5.0f,
+            0.0f, 0.0f, 0.0f,
+            0.0f, 1.0f, 0.0f);
+
+        static auto angle = 0.f;
+        glRotatef(angle, 0.0f, 1.0f, 0.0f);
+        angle += 0.1f;
+
         static Cube cube;
         static Render render(cube);
         render.draw();
+
+        glutSwapBuffers();
+    };
+    glutDisplayFunc(render);
+    glutIdleFunc(render);
+
+    glutReshapeFunc([](int width, int height) {
+        if (height == 0) {
+            height = 1;
+        }
+
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glViewport(0, 0, width, height);
+
+        auto ratio = static_cast<float>(width) / static_cast<float>(height);
+        gluPerspective(45.0f, ratio, 0.1f, 100.0f);
+
+        glMatrixMode(GL_MODELVIEW);
     });
 
     glutMainLoop();
